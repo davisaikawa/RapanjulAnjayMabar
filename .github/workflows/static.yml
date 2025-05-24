@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <title>Selamat Ulang Tahun ke-18, Alfarizy!</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(to right, #fdeff9, #ecf0ff);
+      color: #333; text-align: center; padding: 50px 20px;
+    }
+    /* Halaman Pertanyaan */
+    #question-page { margin-top: 100px; animation: slideUp 0.8s ease-out; }
+    #question-page input, #question-page button {
+      padding: 12px 16px; font-size: 16px; border-radius: 8px;
+      border: 1px solid #ddd; margin: 8px; font-family: 'Poppins', sans-serif;
+    }
+    #question-page button {
+      background-color: #f48fb1; color: #fff; border: none; cursor: pointer;
+      position: relative; overflow: hidden;
+    }
+    #question-page button::after {
+      content: ''; position: absolute; top:50%; left:50%; width:0; height:0;
+      background: rgba(255,255,255,0.2); border-radius:50%; transform:translate(-50%,-50%);
+      transition: width 0.3s ease, height 0.3s ease;
+    }
+    #question-page button:hover::after { width:150px; height:150px; }
+    #question-page button:active { transform: scale(0.97); }
+
+    /* Konten Utama */
+    #content { display: none; margin-top: 50px; }
+    .card {
+      display: inline-block; background: rgba(255,255,255,0.95);
+      padding: 30px 25px; border-radius: 20px;
+      box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+      margin: 20px auto; max-width: 700px; text-align: center;
+      transform: translateY(20px); opacity: 0;
+      transition: all 0.5s cubic-bezier(0.25,0.46,0.45,0.94);
+    }
+    .card.show { transform: translateY(0); opacity: 1; }
+    .nav-buttons { margin-top: 20px; display: flex; gap: 10px; justify-content: center; }
+    .nav-buttons button {
+      padding: 12px 16px; font-size: 16px; border-radius: 8px;
+      border: 1px solid #ddd; background: #f48fb1; color: #fff;
+      cursor: pointer; transition: background 0.3s ease;
+    }
+    .nav-buttons button:disabled { opacity: 0.5; cursor: default; }
+
+    /* Grid Foto: Bentuk "18" */
+    .pixel-grid {
+      display: grid; grid-template-columns: repeat(5, 60px);
+      grid-auto-rows: 60px; gap: 5px; justify-content: center; margin: 20px auto;
+    }
+    .pixel-grid img {
+      width: 60px; height: 60px; object-fit: cover;
+      border-radius: 6px; opacity: 0;
+      animation: fadeIn 0.5s forwards; transition: transform 0.3s ease;
+      cursor: pointer;
+    }
+    .pixel-grid img:hover { transform: scale(1.05); z-index:1; }
+
+    /* Overlay untuk perbesar */
+    .overlay {
+      position: fixed; top:0; left:0; width:100%; height:100%;
+      background: rgba(0,0,0,0.8); display:none; align-items:center; justify-content:center;
+      z-index:1000;
+    }
+    .overlay img {
+      max-width: 90%; max-height: 90%; border-radius:8px;
+    }
+
+    @keyframes fadeIn { to { opacity: 1; } }
+    @keyframes slideUp { from { transform: translateY(50px); opacity:0; } to { transform: translateY(0); opacity:1; } }
+
+    @media (max-width:600px) {
+      .pixel-grid { grid-template-columns: repeat(5, 50px); }
+      .pixel-grid img { width:50px; height:50px; }
+      .card { padding:20px 15px; margin:15px; }
+    }
+  </style>
+</head>
+<body>
+  <div id="question-page">
+    <h2>nice akhirnya lu buka, gw buat ginian doang 3 jam, liatin gabisa jawab!</h2>
+    <p><strong>kapan kita pertama kali ketemu?</strong></p>
+    <input type="text" id="answer" placeholder=""><br>
+    <button id="submitBtn">Submit</button>
+    <p id="error" style="color:red;"></p>
+  </div>
+
+  <div id="content">
+    <div id="step-content" class="card"></div>
+    <div class="nav-buttons">
+      <button id="prevBtn" disabled>Balik</button>
+      <button id="nextBtn" disabled>Lanjut</button>
+    </div>
+  </div>
+
+  <!-- Overlay untuk zoom -->
+  <div id="overlay" class="overlay">
+    <img src="" alt="Zoomed">
+  </div>
+
+  <script>
+    const photoUrls = [
+      'https://i.imgur.com/9wZN6QI.jpeg',
+      'https://i.imgur.com/0ci7bYa.jpeg',
+      'https://i.imgur.com/1DRupDa.jpeg',
+      'https://i.imgur.com/ppZ2hxZ.jpeg',
+      'https://i.imgur.com/UOxCHwG.jpeg',
+      'https://i.imgur.com/W6hNpP3.jpeg',
+      'https://i.imgur.com/czXKK21.jpeg',
+      'https://i.imgur.com/qHjUcKj.jpeg',
+      'https://i.imgur.com/vELp1mO.jpeg',
+      'https://i.imgur.com/GUcTPnA.jpeg',
+      'https://i.imgur.com/SJMVJ2n.jpeg',
+      'https://i.imgur.com/NMYSg0G.jpeg',
+      'https://i.imgur.com/DbbXOQK.jpeg',
+      'https://i.imgur.com/Z4wj1RY.jpeg',
+      'https://i.imgur.com/eKu0mgC.jpeg',
+      'https://i.imgur.com/6rw2L56.jpeg',
+      'https://i.imgur.com/Qda5Ywj.jpeg',
+      'https://i.imgur.com/xlhiI3J.jpeg',
+      'https://i.imgur.com/OjvI5Vy.jpeg',
+      'https://i.imgur.com/4tZj8Fw.jpeg',
+      'https://i.imgur.com/E7dAnIg.jpeg',
+      'https://i.imgur.com/qo5XYZK.jpeg',
+      'https://i.imgur.com/tLv7pry.jpeg',
+      'https://i.imgur.com/jCkigqA.jpeg',
+      'https://i.imgur.com/zTxKfL7.jpeg',
+      'https://i.imgur.com/cHwgXi1.jpeg',
+      'https://i.imgur.com/jqPt4FJ.jpeg'
+    ];
+    const pattern1 = ['1','1','1','1','1','1','1'];
+    const pattern8 = ['1111','1001','1001','1111','1001','1001','1111'];
+    const steps = [
+      "anjay, selamat ulang tahun yang ke-18, Muhammad Alfarizy Rafanza!",
+      "hahay umur udah 18 tahun, udah legal mau ngapa ngapain, eits jangan yak, btw ini h-2 pengumuman utbk loh.",
+      "ya semoga impian kita buat masuk ke PTN bisa tercapai, jangan lupa tetep usaha & tawakal",
+      "nah abis ini bakalan ada foto, sabar ya kalo ngelag, ngerendernya lama, kalo mau cpt bayar",
+      "<div id='pixel-art'></div>",
+      "dan yang terakhir... selamat ulang tahun ke-18, selalu jadi pribadi yang lebih baik, dan perbaiki mentalitasnya.",
+      "<strong>yo udah itu ajaa! ~Davi Saikawa (camaba yujiem)</strong>"
+    ];
+    let currentStep = 0;
+
+    document.getElementById('submitBtn').addEventListener('click', checkAnswer);
+    document.getElementById('prevBtn').addEventListener('click', prevStep);
+    document.getElementById('nextBtn').addEventListener('click', nextStep);
+    const overlay = document.getElementById('overlay');
+    const overlayImg = overlay.querySelector('img');
+
+    function normalize(txt) {
+      return txt.toLowerCase().replace(/\s+/g,'').replace(/[^\w]/g,'');
+    }
+
+    function checkAnswer() {
+      const ans = normalize(document.getElementById('answer').value);
+      if (['28agustus2024','28082024'].includes(ans)) {
+        document.getElementById('question-page').style.display = 'none';
+        document.getElementById('content').style.display = 'block';
+        showStep(0);
+      } else {
+        document.getElementById('error').innerText = 'Jawaban salah, cek sorotan IG kelas atau GC kelas!';
+      }
+    }
+
+    function showStep(i) {
+      const cnt = document.getElementById('step-content');
+      cnt.classList.remove('show');
+      setTimeout(() => {
+        cnt.innerHTML = steps[i];
+        cnt.classList.add('show');
+        document.getElementById('prevBtn').disabled = i === 0;
+        document.getElementById('nextBtn').disabled = i === steps.length - 1;
+        if (steps[i].includes('pixel-art')) initPixelArt();
+      }, 300);
+      currentStep = i;
+    }
+
+    function nextStep() { if (currentStep < steps.length - 1) showStep(currentStep + 1); }
+    function prevStep() { if (currentStep > 0) showStep(currentStep - 1); }
+
+    function initPixelArt() {
+      const art = document.getElementById('pixel-art'); art.className = 'pixel-grid'; art.innerHTML = '';
+      let idx = 0;
+      for (let r = 0; r < pattern1.length; r++) {
+        if (pattern1[r] === '1') art.appendChild(createPixel(idx++)); else art.appendChild(document.createElement('div'));
+        for (let c = 0; c < pattern8[r].length; c++) {
+          if (pattern8[r][c] === '1') art.appendChild(createPixel(idx++)); else art.appendChild(document.createElement('div'));
+        }
+      }
+    }
+
+    function createPixel(i) {
+      const img = document.createElement('img');
+      img.src = photoUrls[i];
+      img.style.animationDelay = (i * 0.1) + 's';
+      img.addEventListener('click', () => {
+        overlayImg.src = img.src;
+        overlay.style.display = 'flex';
+      });
+      return img;
+    }
+
+    // Tutup overlay saat diklik
+    overlay.addEventListener('click', () => overlay.style.display = 'none');
+  </script>
+</body>
+</html>
